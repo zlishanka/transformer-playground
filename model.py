@@ -42,7 +42,7 @@ class PositionalEncoding(nn.Module):
         return self.dropout(x)
 
 
-class   LayerNormalization(nn.Module):
+class  LayerNormalization(nn.Module):
 
     def __init__(self, eps: float = 10**-6) -> None:
         super().__init__()
@@ -57,7 +57,7 @@ class   LayerNormalization(nn.Module):
 
 # Feed Forward Block on input embedding side
 class FeedForwardBlock(nn.Module):
-    """Some Information about feedforward module"""
+
     def __init__(self, d_model:int, d_ff: int, dropout: float) -> None:
         super().__init__()
         self.linear_1 = nn.Linear(d_model, d_ff) # W1 and B1
