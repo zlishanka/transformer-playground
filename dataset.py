@@ -1,3 +1,5 @@
+from typing import Any
+
 import torch
 import torch.nn as nn
 from torch.utils.data import Dataset
@@ -77,8 +79,8 @@ class BilingualDataset(Dataset):
             "src_text" : src_text,
             "tgt_text" : tgt_text
         }
-    # Mask out all top right side of self-attention matrix == 0
-    def causal_mask():
-        mask = torch.triu(torch.ones(1,size,size), diagonal=1).type(torch.int)
-        return mask == 0
+# Mask out all top right side of self-attention matrix == 0
+def causal_mask():
+    mask = torch.triu(torch.ones(1,size,size), diagonal=1).type(torch.int)
+    return mask == 0
 

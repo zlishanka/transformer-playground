@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import math
 
-class InputEmbeddings(nn.module):
+class InputEmbeddings(nn.Module):
 
     def __init__(self, d_model: int, vocab_size:int):
         super().__init__()
@@ -233,7 +233,7 @@ def build_transformer(src_vocab_size:int, tgt_vocab_size:int, src_seq_len:int,
 
     # Create the encoder blocks
     encoder_blocks = []
-    for _in range(N):
+    for _ in range(N):
         encoder_self_attention_block = MultiHeadAttentionBlock(d_model, h, dropout)
         feed_forward_block = FeedForwardBlock(d_model, d_ff, dropout)
         encoder_block = EncoderBlock(encoder_self_attention_block, feed_forward_block, dropout)
