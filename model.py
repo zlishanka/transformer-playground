@@ -9,7 +9,7 @@ class InputEmbeddings(nn.Module):
         self.d_model = d_model
         self.vocab_size = vocab_size
         # mapping: number ---> vector(512)
-        self.embedding == nn.Embedding(vocab_size, d_model)
+        self.embedding = nn.Embedding(vocab_size, d_model)
 
     def forward(self, x):
         return self.embedding(x) * math.sqrt(self.d_model)
@@ -25,12 +25,13 @@ class PositionalEncoding(nn.Module):
         # Create a matrix of shape(seq_len, d_model)
         pe = torch.zeros(seq_len, d_model)
         # Create a vector of shape (seq_len,1)
-        position = torch.arange(0, seq_len, dtype=torch.float).unsqueeze(1)
-        div_term = torch.exp(torch.arange(0,d_model,2).float() * (-math.log(10000.0)/d_model))
+        position = torch.arange(0, seq_len, dtype=torch.float).unsqueeze(1) # (seq_len, 1)
+        # Create a vector of shape (d_model)
+        div_term = torch.exp(torch.arange(0,d_model,2).float() * (-math.log(10000.0)/d_model)) # d_model/2
         # Apply the sin to even position
-        pe[:, 0::2] = torch.sin(position * div_term)
+        pe[:, 0::2] = torch.sin(position * div_term) # sin(position * (10000 ** (2i / d_model))
         # Apply the cos to odd position
-        pe[:, 1::2] = torch.cos(position * div_term)
+        pe[:, 1::2] = torch.cos(position * div_term) # cos(position * (10000 ** (2i / d_model))
 
         pe = pe.unsqueeze(0) # (1, seq_len, d_model)
 
@@ -38,7 +39,7 @@ class PositionalEncoding(nn.Module):
 
     def forward(self, x):
         # require_-grad(False), make this particular tensor not learned
-        x = x + (self.pe[:,:x.shape(1),:].requires_grad(False))
+        x = x + (self.pe[:,:x.shape[1],:]).requires_grad_(False)
         return self.dropout(x)
 
 
@@ -206,18 +207,20 @@ class Transformer(nn.Module):
         self.tgt_pos = tgt_pos
         self.projection_layer = projection_layer
 
-        def encode(self, src, src_mask):
-            src = self.src_embed(src)
-            src = self.src_pos(src)
-            return self.encoder(src, src_mask)
+    def encode(self, src, src_mask):
+        # (batch, seq_len, d_model)
+        src = self.src_embed(src)
+        src = self.src_pos(src)
+        return self.encoder(src, src_mask)
 
-        def decode(self, encoder_output, src_mask, tgt, tgt_mask):
-            tgt = self.tgt_embed(tgt)
-            tgt = self.tgt_pos(tgt)
-            return self.decoder(tgt, encoder_output, src_mask, tgt_mask)
+    def decode(self, encoder_output, src_mask, tgt, tgt_mask):
+        # (batch, seq_len, d_model)
+        tgt = self.tgt_embed(tgt)
+        tgt = self.tgt_pos(tgt)
+        return self.decoder(tgt, encoder_output, src_mask, tgt_mask)
 
-        def project(self, x):
-            return self.projetion_layer(x)
+    def project(self, x):
+        return self.projetion_layer(x)
 
 # build transformer based on given parameters
 def build_transformer(src_vocab_size:int, tgt_vocab_size:int, src_seq_len:int,
@@ -265,4 +268,4 @@ def build_transformer(src_vocab_size:int, tgt_vocab_size:int, src_seq_len:int,
         if p.dim() > 1:
             nn.init.xavier_uniform_(p)
 
-        return transformer
+    return transformer

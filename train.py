@@ -82,7 +82,7 @@ def train_model(config):
     Path(config['model_folder']).mkdir(parents=True, exist_ok=True)
 
     train_dataloader, val_dataloader, tokenizer_src, tokenizer_tgt = get_ds(config)
-    model = get_model(config, tokenizer_src.get_vocab_size(), tokenizer_tgt.get_vocab_size()).to(deivce)
+    model = get_model(config, tokenizer_src.get_vocab_size(), tokenizer_tgt.get_vocab_size()).to(device)
 
     # Tensorboard
     writer = SummaryWriter(config['experiment_name'])
@@ -100,16 +100,16 @@ def train_model(config):
         global_step = state['global_step']
 
     loss_fn = nn.CrossEntropyLoss(ignore_index=tokenizer_src.token_to_id('[PAD]'),
-                                  lable_smoothing=0.1).to(device)
+                                  label_smoothing=0.1).to(device)
 
-    for epoch in range(initial_epoch, config['num_epoch']):
+    for epoch in range(initial_epoch, config['num_epochs']):
         model.train()
         batch_iterator = tqdm(train_dataloader, desc=f'Processing epoch {epoch:02d}')
         for batch in batch_iterator:
             encoder_input = batch['encoder_input'].to(device)   # (B, seq_len)
             decoder_input = batch['decoder_input'].to(device)   # (B, seq_len)
-            encoder_mask = batch['encoder_mask'].to(deivce)     # (B, 1, 1, seq_len)
-            decoder_mask = batch['decoder_mask'].to(deivce)     # (B, 1, seq_len, seq_len)
+            encoder_mask = batch['encoder_mask'].to(device)     # (B, 1, 1, seq_len)
+            decoder_mask = batch['decoder_mask'].to(device)     # (B, 1, seq_len, seq_len)
 
             # Run the tensors through transformer
             encoder_output = model.encode(encoder_input, encoder_mask) #(Batch, seq_len, d_model)

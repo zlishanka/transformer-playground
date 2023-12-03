@@ -3,3 +3,4 @@ torchvision
 datasets
 tokenizers
 pathlib
+tensorboard
