@@ -226,7 +226,7 @@ class Transformer(nn.Module):
         return self.decoder(tgt, encoder_output, src_mask, tgt_mask)
 
     def project(self, x):
-        return self.projetion_layer(x)
+        return self.projection_layer(x)
 
 # build transformer based on given parameters
 def build_transformer(src_vocab_size:int, tgt_vocab_size:int, src_seq_len:int,
