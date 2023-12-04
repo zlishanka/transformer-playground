@@ -1,5 +1,6 @@
 torch
 torchvision
+torchtext
 datasets
 tokenizers
 pathlib
