@@ -27,7 +27,7 @@ to the embedding vector of a specific token in the vocabulary.
 
 ### Code Examples
 ```text
-	embedding_layer = nn.Embedding(vocab_size, embedding_dim)
+embedding_layer = nn.Embedding(vocab_size, embedding_dim)
 ```
 ## Positional Encoding 
 
@@ -40,9 +40,9 @@ to the embedding vector of a specific token in the vocabulary.
 
 ### Code examples
 ```
-	x = x + (self.pe[:,:x.shape[1],:]).requires_grad_(False)
-    # no need to take gradient, particular tensor that no need to learn
+x = x + (self.pe[:,:x.shape[1],:]).requires_grad_(False)
 ```
+-no need to take gradient, particular tensor that no need to learn
 
 ## Layer Normalization
 
@@ -58,10 +58,10 @@ it challenging for the model to converge.
 - Layer normalization introduces learnable scale (γ) and shift (β) parameters for each feature.
 
 ### Code samples
- 	```
+```
     alpha = nn.Parameter(torch.ones(features))    # alpha is a learnable parameter (scale)
     bias =  nn.Parameter(torch.zeros(features))   # bias is a learnable parameter (shift)
-	```
+```
 ## Feed Forward 
 
 ### What is the functioinality and why it is applied after self-atttention layer
@@ -79,9 +79,9 @@ FF block helps the model incorporate position-specific transformations.
 ```
 FFN(x) = LayerNorm(x + relu(linear(x) * W1 + b1) * W2 + b2
 ```
-Linear is the linear transformation
-W1, b1, W2, b2 are learnable parameters
-LayerNorm denotes layer normalization
+-Linear is the linear transformation
+-W1, b1, W2, b2 are learnable parameters
+-LayerNorm denotes layer normalization
 
 ### Hidden dimension
 - The hidden dimension of the FF layer is a hyperparameter that determines the size of the intermediate representations.
