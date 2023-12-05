@@ -66,13 +66,13 @@ it challenging for the model to converge.
 
 ### What is the functioinality and why it is applied after self-atttention layer
     
-(1) Complex Representations - The output of self-attention alone may lack the ability to model more intricate, non-linear transformations
+- Complex Representations - The output of self-attention alone may lack the ability to model more intricate, non-linear transformations
 FF block provides the model with the capacity to learn and represent non-linear functions of the input data.
-(2) Position-wise Information - For NLP task, position-wise information may be crucial.
+- Position-wise Information - For NLP task, position-wise information may be crucial.
 FF block helps the model incorporate position-specific transformations.
-(3) Capacity to Model Diverse Patterns
-(4) Adaptability to Task Complexity
-(5) Enhancing Model Depth - Deeper architectures can capture more hierarchical and abstract features, enabling the model to
+- Capacity to Model Diverse Patterns
+- Adaptability to Task Complexity
+- Enhancing Model Depth - Deeper architectures can capture more hierarchical and abstract features, enabling the model to
             learn intricate patterns and representations.
 
 ### How Feed Forward block is applied
