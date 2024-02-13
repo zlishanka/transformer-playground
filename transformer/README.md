@@ -1,5 +1,4 @@
-# transformer-playground
-Playground for transformer
+# Original Transformer Implementation to Solve Sequence-to-Sequence Translation.
 
 [Original paper - "Attention is all you need"](https://arxiv.org/abs/1706.03762)
 
