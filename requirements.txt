@@ -5,3 +5,8 @@ datasets
 tokenizers
 pathlib
 tensorboard
+
+einops
+jupyter
+notebook
+matplotlib
