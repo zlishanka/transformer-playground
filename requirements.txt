@@ -6,7 +6,18 @@ tokenizers
 pathlib
 tensorboard
 
+# ViT
 einops
 jupyter
 notebook
 matplotlib
+
+# CLIP
+ftfy
+git+https://github.com/openai/CLIP.git
+#pkg_resources
+opencv-python
+open_clip_torch
+regex
+tqdm
+scikit-image
