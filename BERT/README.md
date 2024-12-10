@@ -10,8 +10,8 @@
 
 ## Original Bert Paper Walkthrough
 
-[Paper reading lists](https://github.com/mli/paper-reading)
-[Bert walkthrough](https://www.youtube.com/watch?v=ULD3uIb2MHQ)
+[Paper reading lists](https://github.com/mli/paper-reading)  
+[Bert walkthrough](https://www.youtube.com/watch?v=ULD3uIb2MHQ)  
 
 Two steps in Bert frameworks
 - pretraining (unlabeled Sentences)
