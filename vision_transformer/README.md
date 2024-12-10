@@ -13,3 +13,7 @@
 [ViT Blogpost by Francesco Zuppichini](https://towardsdatascience.com/implementing-visualttransformer-in-pytorch-184f9f16f632) 
 
 [Medium Blogpost by Brian Pulfer](https://medium.com/mlearning-ai/vision-transformers-from-scratch-pytorch-a-step-by-step-guide-96c3313c2e0c)
+
+## Lecture on ViT
+
+[Vision Transformer for Image Classification](https://www.youtube.com/watch?v=HZ4j_U3FC94)
