@@ -1,4 +1,4 @@
-# vision_transformer 
+# Vision Transformer 
 
 [Original paper - "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale"](https://arxiv.org/abs/2010.11929) 
 
@@ -30,7 +30,17 @@
     - MLP layer extends to 197x768x4 first and project it back to 197x768. Basically no change, still `sequence length x feature dim`
     - The output of class token is then transformed into a class prediction via a small MLP with tanh as non-linearity in the single hidden layer.
 
-      
+[Masked Autoencoders Are Scalable Vision Learners](https://arxiv.org/abs/2111.06377)
+
+- MAE to ViT is like BERT to Transformer. Self-supervised!
+- Audoencoder means more like auto-regression, label and sample come from the same source (in NLP, use the first couple of words to predict next word), predict/reconstruct masked image itself.
+- Two core designs
+  - Asymmetric encoder-decoder architecture, encoder operates only on the visible subset of patches, along with lightweight decoder that reconstruct the mask tokens.
+  - Masking a high proportion of the input image, i.e., 75%, yields a nontrivial and meaningful self-supervisory task.
+
+- Since encoder is only dealing with 25% of unmasked input patches, it has less computational complexity
+- 
+
 [Intriguing Properties of Vision Transformers](https://arxiv.org/abs/2105.10497)
 
 - ViT shows better handling vision tasks in situations like `Occlusion`, `Distribution Shift`, `Adversarial Patch`, `Permutation` as compared to CNN.
