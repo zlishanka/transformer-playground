@@ -31,6 +31,19 @@ CLIP model transfers non-trivially to most tasks and is often competitive with a
     - [Reference: How to Train Really Large Models on Many GPUs?](https://lilianweng.github.io/posts/2021-09-25-train-large/)
     - choose final model to be `ViT-L/14@336px`
 
+- Experiments
+    - zero-shot transfer:
+    - Prompt engineering and ensembling
+        - use a sentence not single word during pre-training
+        - when doing inference, there would a distribution gap
+        - use `prompt template` to solve above problem, like `A photo of a {label}.`
+        - CLIP model uses about 80 prompt templates, check github openai/CLIP, `imagenet_templates`
+     
+    - Representation learning
+    - Comparison to Human Performance
+        
+## CLIP realted papers
+
 [StyleCLIP: Text-Driven Manipulation of StyleGAN Imagery](https://arxiv.org/abs/2103.17249)
 
 [CLIPDraw: Exploring Text-to-Drawing Synthesis through Language-Image Encoders](https://arxiv.org/abs/2106.14843)
