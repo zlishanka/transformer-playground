@@ -1,0 +1,11 @@
+opencv-python>=4.8.0
+numpy>=1.24.0
+torch>=1.13.1
+ultralytics>=8.0.20
+scikit-learn>=1.2.2
+deep-sort-realtime
+
+# If you have NVIDIA GPU
+# pip3 install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu118 
+# DeepSort
+# git clone https://github.com/nwojke/deep_sort.git 
