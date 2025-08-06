@@ -3,7 +3,7 @@
 [Original paper - "An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale"](https://arxiv.org/abs/2010.11929) 
 
 - There is NO CNN reliance. Previously, a lot of interests focus on combining CNNs with forms of self-attention. 
-- A pure transformer applied to image patches can perform very well on iamge classification.
+- A pure transformer applied to image patches can perform very well on image classification.
 - Unlike NLP task, Pre-training of ViT is supervised.
 - It demonstrates that large scale pre-training makes vanilla transformers competitive with STOA of CNNs.
 - Similar work done by Cordonnier et al. (2020) use much smaller patch (2x2) because of smaller 32x32 image resolution. (ViT uses 224x224)
