@@ -75,12 +75,14 @@ FF block helps the model incorporate position-specific transformations.
             learn intricate patterns and representations.
 
 ### How Feed Forward block is applied
-```
-FFN(x) = LayerNorm(x + relu(linear(x) * W1 + b1) * W2 + b2
-```
--Linear is the linear transformation
--W1, b1, W2, b2 are learnable parameters
--LayerNorm denotes layer normalization
+
+$$
+\text{FFN}(x) = \text{LayerNorm}\left(x + \left(\text{ReLU}(x W_1 + b_1)\right) W_2 + b_2\right)
+$$
+
+- $\text{Linear}$ is the linear transformation
+- $W_1, b_1, W_2, b_2$ are learnable parameters
+- $\text{LayerNorm}$ denotes layer normalization
 
 ### Hidden dimension
 - The hidden dimension of the FF layer is a hyperparameter that determines the size of the intermediate representations.
@@ -98,3 +100,6 @@ FFN(x) = LayerNorm(x + relu(linear(x) * W1 + b1) * W2 + b2
 
         linear_2(dropout(torch.relu(linear_1(x))))
 ```
+
+## References
+[1] Build a Large Language Model (From Scratch) by S. Raschka 
