@@ -1,20 +1,19 @@
-# Transformer Basics: LLM Internals for Model Diffing
+# Transformer Basics: LLM Internals
 
-Split out of [[delta-crosscoder-summary-arxiv-2603.04426]] on 2026-11-09, where it was background for the Part 2 glossary (activations, SAEs, crosscoders, steering). "The paper" below means Delta-Crosscoder (arXiv 2603.04426). See also [[model-diffing-for-fine-tuning-references]] and [[finetuning-bias-guardrails-and-tests-arxiv-2510.13900]].
+Notes on how transformers work inside: the residual stream, attention, the Q/K/V weight matrices, multi-head attention, parameter counts and the KV cache. The code reading refers to `model.py` in this directory.
 
-
-All of this is general background knowledge, not from the paper. Model figures (Llama 3.1 8B: 32 layers, hidden size 4,096, 32 attention heads, MLP inner width 14,336) are from memory and have not been checked against the model's config.
+All of this is general background knowledge. Model figures (Llama 3.1 8B: 32 layers, hidden size 4,096, 32 attention heads, MLP inner width 14,336) are from memory and have not been checked against the model's config.
 
 ## Decoder-only models and "middle layers"
 
 - **The original transformer (2017)** had an encoder (reads the input) and a decoder (generates the output while attending to the encoder). T5 and the original translation models follow that design.
-- **Modern chat LLMs** (Llama, Qwen, Gemma, the GPT models) keep only the decoder part: one stack of identical blocks (32 in Llama 3.1 8B), each an attention-plus-MLP step on the residual stream, with causal attention (a token sees only earlier tokens). Everything in this glossary assumes that kind of model.
-- **BERT-style models** are encoder-only. They are not used for chat or generation and do not appear in these papers.
+- **Modern chat LLMs** (Llama, Qwen, Gemma, the GPT models) keep only the decoder part: one stack of identical blocks (32 in Llama 3.1 8B), each an attention-plus-MLP step on the residual stream, with causal attention (a token sees only earlier tokens). Unless stated otherwise, these notes assume that kind of model.
+- **BERT-style models** are encoder-only. They are not used for chat or generation.
 - **So "middle layers" means the middle of that single stack,** for example around layers 12-20 of 32. Early layers sit near the token embeddings and late layers near the output logits. "Middle" is a rough label for depth, not an official boundary.
-- That the models in the papers (Llama, Qwen, Gemma) are decoder-only is from background knowledge, not checked against each model card.
-- For an encoder-decoder model, "middle" would be ambiguous. Papers then usually give a specific layer number and say which stack it belongs to, which is worth checking.
+- That Llama, Qwen and Gemma are decoder-only is from background knowledge, not checked against each model card.
+- For an encoder-decoder model, "middle" would be ambiguous. Write-ups then usually give a specific layer number and say which stack it belongs to, which is worth checking.
 
-**When an encoder-decoder design is used instead** (background knowledge, not from the papers). It fits when the task turns a complete input into a different output, and the input is worth reading in full before generating anything.
+**When an encoder-decoder design is used instead** (background knowledge). It fits when the task turns a complete input into a different output, and the input is worth reading in full before generating anything.
 
 - **The encoder reads the whole input at once, in both directions.** Every input token can see every other input token, including later ones. A decoder-only model can't, because its attention only looks backward.
 - **The decoder generates the output one token at a time,** attending to the encoder's finished representation of the input (cross-attention), so it has a full, stable view of the source while writing.
@@ -34,7 +33,7 @@ All of this is general background knowledge, not from the paper. Model figures (
 
 - **4,096 is the model's hidden size** (`d_model`). The model's own first step turns each token ID into a vector of that width, and every layer keeps that width. It is not a separate "embedding model."
 - A standalone embedding model (used for search or RAG, one vector per text) is a different thing, with its own unrelated output size.
-- Some internal pieces are wider than 4,096 (the MLP's inner layer). Activation methods in these papers usually read the 4,096-wide stream, but I have not checked which activations Delta-Crosscoder uses.
+- Some internal pieces are wider than 4,096 (the MLP's inner layer). Interpretability methods usually read the 4,096-wide stream, but a given method may read other activations.
 
 ## Tracing a token's vector through the layers
 
@@ -69,7 +68,7 @@ for layer, h in enumerate(out.hidden_states):
 - **Tokenization:** A word may split into several tokens. The offset mapping finds the token positions covering it. Using the last piece is a choice.
 - **`output_hidden_states=True`:** Returns one tensor per layer, shape `[batch, tokens, 4096]`. The first is the embedding step's output.
 - **A token only sees what came before it** (causal attention), so its vector cannot reflect later words.
-- **A raw vector is not readable.** Compare it to something: the same position in another prompt, the base vs fine-tuned model, or a projection onto a steering direction or SAE latent. The "logit lens" projects a layer's vector to the vocabulary to see which word the model would predict at that point.
+- **A raw vector is not readable.** Compare it to something: the same position in another prompt, or a projection onto a steering direction or SAE latent. The "logit lens" projects a layer's vector to the vocabulary to see which word the model would predict at that point.
 - **Finer values need hooks** (PyTorch forward hooks, or a library like TransformerLens) to get attention or MLP outputs inside a layer.
 - From memory, the last returned state in Hugging Face is, I believe, after the final normalization step. Not verified.
 
@@ -80,14 +79,14 @@ for layer, h in enumerate(out.hidden_states):
 - **Ways to find a direction:**
   - **Difference of means:** average vectors from prompts with and without the property, then subtract (how steering vectors are made).
   - **Linear probe:** train a simple classifier on the vectors, such as "true vs false capital." Its weights are a direction.
-  - **SAE or crosscoder latents:** learn many directions at once. Delta-Crosscoder does this for the activation difference between two models.
-  - **PCA on the differences:** find the directions where base and fine-tuned vectors differ most.
+  - **SAE latents:** a sparse autoencoder (SAE) learns many directions at once from a large set of activations.
+  - **PCA:** find the directions along which the vectors vary most.
 - **Testing whether a direction matters** (finding one only shows correlation):
   - **Steering:** add or subtract the direction and see whether the output changes.
   - **Activation patching:** copy the vector from one run (say the "Paris" position in "France capital city is Paris") into another (the "Washington" position in "US capital city is Washington") at one layer and see whether the output changes. This shows which layers and positions carry the fact.
 - **Which layer:** Sweep across layers and see where the signal is clearest. Concept-level information is often strongest in middle layers, but that is a general pattern, not confirmed for any specific model.
-- **Sketch for a false-fact check (my suggestion, not from a paper):** collect true and false statements, get the final-token vector at every layer, compute a difference of means and train a probe per layer, then test by steering or patching. For a fine-tuned model, repeat on both models and compare.
-- **Superposition:** A 4,096-dimensional space has only 4,096 perfectly independent directions, but the model needs far more concepts. It uses nearly independent directions, so thousands of concepts overlap with small interference. This is why SAEs and crosscoders exist.
+- **Sketch for a false-fact check (my suggestion):** collect true and false statements, get the final-token vector at every layer, compute a difference of means and train a probe per layer, then test by steering or patching.
+- **Superposition:** A 4,096-dimensional space has only 4,096 perfectly independent directions, but the model needs far more concepts. It uses nearly independent directions, so thousands of concepts overlap with small interference. This is why SAEs are used to separate them.
 
 ## The residual stream
 
@@ -132,7 +131,6 @@ The result is added to the "Washington" stream, following the residual-stream ru
 - **Many heads in parallel:** Each layer has many heads, each with its own query, key and value rules, so different heads can specialize. Their outputs are combined and added to the stream.
 - **Two separate decisions:** The query-key part decides where to look. The value-and-output part (OV) decides what to move and which directions to write.
 - **Facts (general finding, not verified here):** For "capital of X," attention moves information about the subject into the stream where the answer forms, and the MLP step often does the lookup.
-- **Link to the thread:** The abstract of 2604.08524 reports that steering vectors act mainly through the OV pathway, not the QK pathway. Only the abstract was read.
 
 **Attention weight sizes** (background knowledge; the Llama 3.1 8B figures are from memory and unverified).
 
