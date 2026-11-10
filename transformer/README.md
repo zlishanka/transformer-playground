@@ -103,3 +103,5 @@ $$
 
 ## References
 [1] Build a Large Language Model (From Scratch) by S. Raschka 
+
+[2] [Transformer Basics: LLM Internals](transformer-basics-llm-internals.md) - background notes in this repo on the residual stream, attention, Q/K/V weight matrices, multi-head attention, parameter counts and the KV cache.
